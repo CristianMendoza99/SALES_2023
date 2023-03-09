@@ -4,14 +4,12 @@
 @inject IRepository repository
 
 <h3>Paises</h3>
-
-@if (Countries is null)
-{
-    <p>CARGANDO...</p>
-}
-else
-{
-     <table class="table table-striped">
+<GenericList MyList="Countries">
+    <Loading>
+        <p>CARGANDO...</p>
+    </Loading>
+    <Body>
+        <table class="table table-striped">
             <thead>
                 <tr>
                     <th></th>
@@ -29,12 +27,17 @@ else
                         <td>
                             @country.Name
                         </td>
-                    </tr>   
+                    </tr>
                 }
             </tbody>
         </table>
 
-}
+
+    </Body>
+
+</GenericList>
+
+
 
 @code {
     public List<Country>? Countries { get; set; }
