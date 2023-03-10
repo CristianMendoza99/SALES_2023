@@ -20,7 +20,7 @@ namespace Sales.API.Data
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync();
-            await CheckCountriesAsync();
+           await CheckCountriesAsync();
             await CheckCategoriesAsync();
         }
 
@@ -100,6 +100,12 @@ namespace Sales.API.Data
                 _context.Categories.Add(new Category { Name = "Calzado" });
                 _context.Categories.Add(new Category { Name = "Accesorios" });
                 _context.Categories.Add(new Category { Name = "Repuestos" });
+                _context.Categories.Add(new Category { Name = "Papas" });
+                _context.Categories.Add(new Category { Name = "Mercado" });
+                _context.Categories.Add(new Category { Name = "Ellas" });
+                _context.Categories.Add(new Category { Name = "Tenis" });
+                _context.Categories.Add(new Category { Name = "Jeans" });
+                _context.Categories.Add(new Category { Name = "Fragancias" });
 
             }
             await _context.SaveChangesAsync();

@@ -23,7 +23,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHTTP = await repository.Get<Category>($"api/categories/{Id}");
+        var responseHTTP = await repository.Get<Category>($"/api/categories/{Id}");
 
         if (responseHTTP.Error)
         {
@@ -45,7 +45,7 @@ else
 
     private async Task Edit()
     {
-        var responseHTTP = await repository.Put("api/categories", category);
+        var responseHTTP = await repository.Put("/api/categories", category);
 
         if (responseHTTP.Error)
         {
