@@ -6,85 +6,75 @@ using Sales.Shared.Entities;
 namespace Sales.API.Controllers
 {
     [ApiController]
-    [Route("/api/countries")]
-    public class CountriesController:ControllerBase
+    [Route("/api/cities")]
+    public class CitiesController : ControllerBase
     {
         private readonly DataContext _context;
 
-        public CountriesController(DataContext context) {
+        public CitiesController(DataContext context)
+        {
             _context = context;
         }
 
-
         [HttpGet]
-        public async Task<IActionResult> GetAsync() {
-            return Ok(await _context.Countries.Include(x=>x.States).ToListAsync());
-        }
-
-
-        [HttpGet ("full")]
-        public async Task<IActionResult> GetFullAsync()
+        public async Task<IActionResult> GetAsync()
         {
-            return Ok(await _context.Countries.Include(x => x.States!)
-                .ThenInclude(x=>x.Cities)
-                .ToListAsync());
+            return Ok(await _context.Cities.ToListAsync());
         }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var country=await _context.Countries
-                .Include(x=>x.States!) 
-                .ThenInclude(x=>x.Cities)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var city = await _context.Cities.FirstOrDefaultAsync(x => x.Id == id);
 
-            if(country == null)
+            if (city == null)
             {
                 return NotFound();
             }
-            return Ok(country);
+            return Ok(city);
         }
 
 
 
         [HttpPost]
-        public async Task<ActionResult>PostAsync(Country country)
+        public async Task<ActionResult> PostAsync(City city)
         {
             try
             {
-                _context.Add(country);
+                _context.Add(city);
                 await _context.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un pais con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
                 return BadRequest(dbUpdateException.Message);
-                
+
             }
-            catch(Exception exeption)
+            catch (Exception exeption)
             {
                 return BadRequest(exeption.Message);
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult> PutAsync(Country country)
+        public async Task<ActionResult> PutAsync(City city)
         {
             try
             {
-                _context.Update(country);
+                _context.Update(city);
                 await _context.SaveChangesAsync();
-                return Ok(country);
+                return Ok(city);
             }
             catch (DbUpdateException dbUpdateException)
             {
                 if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                 {
-                    return BadRequest("Ya existe un pais con el mismo nombre");
+                    return BadRequest("Ya existe una ciudad con el mismo nombre");
                 }
                 return BadRequest(dbUpdateException.Message);
 
@@ -100,15 +90,15 @@ namespace Sales.API.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var country = await _context.Countries.FirstOrDefaultAsync(x => x.Id == id);
+            var city = await _context.States.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (country == null)
+            if (city == null)
             {
                 return NotFound();
             }
 
 
-            _context.Remove(country);
+            _context.Remove(city);
             await _context.SaveChangesAsync();
             return NoContent();
         }
