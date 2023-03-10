@@ -21,7 +21,7 @@ namespace Sales.API.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckCountriesAsync();
-           // await CheckCategoriesAsync();
+            await CheckCategoriesAsync();
         }
 
         private async Task CheckCountriesAsync()
@@ -82,6 +82,27 @@ namespace Sales.API.Data
                     }
                 }
             }
+        }
+
+        private async Task CheckCategoriesAsync()
+        {
+            if (!_context.Categories.Any())
+            {
+                _context.Categories.Add(new Category { Name = "Ropa" });
+                _context.Categories.Add(new Category { Name = "Herramientas" });
+                _context.Categories.Add(new Category { Name = "Cocina" });
+                _context.Categories.Add(new Category { Name = "Juguetes" });
+                _context.Categories.Add(new Category { Name = "LLaveros" });
+                _context.Categories.Add(new Category { Name = "Ferreteria" });
+                _context.Categories.Add(new Category { Name = "Tecnologia" });
+                _context.Categories.Add(new Category { Name = "Hombres" });
+                _context.Categories.Add(new Category { Name = "Damas" });
+                _context.Categories.Add(new Category { Name = "Calzado" });
+                _context.Categories.Add(new Category { Name = "Accesorios" });
+                _context.Categories.Add(new Category { Name = "Repuestos" });
+
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }
