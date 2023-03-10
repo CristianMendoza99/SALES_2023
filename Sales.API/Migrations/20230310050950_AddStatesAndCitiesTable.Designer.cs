@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sales.API.Data;
 
@@ -11,9 +12,11 @@ using Sales.API.Data;
 namespace Sales.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230310050950_AddStatesAndCitiesTable")]
+    partial class AddStatesAndCitiesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,19 +38,14 @@ namespace Sales.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("StateId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("StateId1")
+                    b.Property<int?>("StateId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StateId1");
-
                     b.HasIndex("StateId", "Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[StateId] IS NOT NULL");
 
                     b.ToTable("Cities");
                 });
@@ -81,7 +79,7 @@ namespace Sales.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CountryId")
+                    b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -92,7 +90,8 @@ namespace Sales.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CountryId", "Name")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[CountryId] IS NOT NULL");
 
                     b.ToTable("States");
                 });
@@ -101,7 +100,7 @@ namespace Sales.API.Migrations
                 {
                     b.HasOne("Sales.Shared.Entities.State", "State")
                         .WithMany("Cities")
-                        .HasForeignKey("StateId1");
+                        .HasForeignKey("StateId");
 
                     b.Navigation("State");
                 });
@@ -110,9 +109,7 @@ namespace Sales.API.Migrations
                 {
                     b.HasOne("Sales.Shared.Entities.Country", "Country")
                         .WithMany("States")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });
