@@ -65,12 +65,12 @@ namespace Sales.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cities_StateId1",
+                name: "IX_Cities_StateId",
                 table: "Cities",
                 column: "StateId1");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Cities_States_StateId1",
+                name: "FK_Cities_States_StateId",
                 table: "Cities",
                 column: "StateId1",
                 principalTable: "States",
@@ -89,7 +89,7 @@ namespace Sales.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Cities_States_StateId1",
+                name: "FK_Cities_States_StateId",
                 table: "Cities");
 
             migrationBuilder.DropForeignKey(
@@ -105,7 +105,7 @@ namespace Sales.API.Migrations
                 table: "Cities");
 
             migrationBuilder.DropIndex(
-                name: "IX_Cities_StateId1",
+                name: "IX_Cities_StateId",
                 table: "Cities");
 
             migrationBuilder.DropColumn(
