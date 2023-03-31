@@ -22,6 +22,8 @@ namespace Sales.API.Helpers
             _signInManager = signInManager;
         }
 
+
+
         public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
         {
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
