@@ -9,6 +9,7 @@
         Task<HttpResponseWrapper<TResponse>> Post<T, TResponse>(string url, T model);
         Task<HttpResponseWrapper<Object>> Delete(string url);
         Task<HttpResponseWrapper<Object>> Put<T>(string url, T model);
+
         Task<HttpResponseWrapper<TResponse>> Put<T, TResponse>(string url, T model);
     }
 
