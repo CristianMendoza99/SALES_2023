@@ -4,7 +4,7 @@
 @inject SweetAlertService sweetAlertService
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Crear Estado / Departamento</h3>
+<h3>Crear Estado/Departamento</h3>
 
 <StateForm @ref="stateForm" State="state" OnValidSubmit="CreateAsync" ReturnAction="Return" />
 
@@ -12,21 +12,24 @@
     private State state = new();
     private StateForm? stateForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
     public int CountryId { get; set; }
 
     private async Task CreateAsync()
     {
         state.CountryId = CountryId;
-
         var responseHttp = await repository.Post("/api/states", state);
         if (responseHttp.Error)
         {
             var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            await sweetAlertService.FireAsync("Error", message);
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 

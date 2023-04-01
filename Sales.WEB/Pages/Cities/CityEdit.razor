@@ -1,14 +1,14 @@
-﻿@page "/cities/edit/{CityId:int}"
+﻿@page "/cities/edit/{cityId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Editar Ciudad</h3>
+<h3>Editar Ciudad:</h3>
 
 @if (city is null)
 {
-    <p><div class="spinner"/></p>
+    <div class="spinner" />
 }
 else
 {
@@ -19,38 +19,48 @@ else
     private City? city;
     private CityForm? cityForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
-    public int CityId { get; set; }
+    public int cityId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<City>($"/api/cities/{CityId}");
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Get<City>($"api/cities/{cityId}");
+
+        if (responseHTTP.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 navigationManager.NavigateTo("/countries");
                 return;
             }
-
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
+                return;
+            }
         }
-
-        city = responseHttp.Response;
+        else
+        {
+            city = responseHTTP.Response;
+        }
     }
 
     private async Task EditAsync()
     {
-        var responseHttp = await repository.Put("/api/cities", city);
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Put("api/cities", city);
+
+        if (responseHTTP.Error)
         {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 
@@ -59,5 +69,4 @@ else
         cityForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo($"/states/details/{city!.StateId}");
     }
-    //@attribute [Authorize(Roles = "Admin")]
 }

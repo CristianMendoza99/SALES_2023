@@ -8,49 +8,67 @@
 
 @if (country is null)
 {
-    <p><div class="spinner"/></p>
+    <div class="spinner" />
 }
 else
 {
     <CountryForm @ref="countryForm" Country="country" OnValidSubmit="EditAsync" ReturnAction="Return" />
 }
 
+
 @code {
     private Country? country;
     private CountryForm? countryForm;
+
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
 
     [Parameter]
     public int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<Country>($"/api/countries/{Id}");
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Get<Country>($"api/countries/{Id}");
+
+        if (responseHTTP.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 navigationManager.NavigateTo("/countries");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
                 return;
             }
-
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
         }
-
-        country = responseHttp.Response;
+        else
+        {
+            country = responseHTTP.Response;
+        }
     }
 
     private async Task EditAsync()
     {
-        var responseHttp = await repository.Put("/api/countries", country);
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Put("api/countries", country);
+
+        if (responseHTTP.Error)
         {
-            var message = await responseHttp.GetErrorMessageAsync();
+            //var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            //await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
+            var message = await responseHTTP.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
-        }
 
+        }
+        //else
+        //{
+        //    //countryForm!.FormPostedSuccessfully = true;
+        //    //navigationManager.NavigateTo("/countries");
+
+        //}
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 
@@ -59,4 +77,6 @@ else
         countryForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo("/countries");
     }
+
+
 }

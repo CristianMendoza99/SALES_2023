@@ -1,15 +1,14 @@
-﻿@page "/states/edit/{StateId:int}"
+﻿@page "/states/edit/{stateId:int}"
 @inject IRepository repository
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 @attribute [Authorize(Roles = "Admin")]
 
-
 <h3>Editar Estado/Departamento</h3>
 
 @if (state is null)
 {
-    <p><div class="spinner"/></p>
+    <div class="spinner" />
 }
 else
 {
@@ -20,38 +19,47 @@ else
     private State? state;
     private StateForm? stateForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
     [Parameter]
-    public int StateId { get; set; }
+    public int stateId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Get<State>($"api/states/{stateId}");
+
+        if (responseHTTP.Error)
         {
-            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            if (responseHTTP.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 navigationManager.NavigateTo("/countries");
+            }
+            else
+            {
+                var messageError = await responseHTTP.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", messageError, SweetAlertIcon.Error);
                 return;
             }
-
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
-            return;
         }
-
-        state = responseHttp.Response;
+        else
+        {
+            state = responseHTTP.Response;
+        }
     }
 
     private async Task EditAsync()
     {
-        var responseHttp = await repository.Put("/api/states", state);
-        if (responseHttp.Error)
+        var responseHTTP = await repository.Put("api/states", state);
+
+        if (responseHTTP.Error)
         {
-            var message = await responseHttp.GetErrorMessageAsync();
-            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            var mensajeError = await responseHTTP.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", mensajeError, SweetAlertIcon.Error);
             return;
         }
 
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
         Return();
     }
 
@@ -60,5 +68,4 @@ else
         stateForm!.FormPostedSuccessfully = true;
         navigationManager.NavigateTo($"/countries/details/{state!.CountryId}");
     }
-    //@attribute [Authorize(Roles = "Admin")]
 }

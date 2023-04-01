@@ -17,7 +17,7 @@ else
             <div class="card-header">
                 <span>
                     <i class="oi oi-person" /> Editar Usuario
-                    <a class="btn btn-sm btn-secondary float-end" href="/changePassword"><i class="oi oi-key" /> Cambiar Contraseña</a>
+                    <a class="btn btn-sm btn-secondary float-end" @onclick=@(() => ShowModal())><i class="oi oi-key"></i> Cambiar Contraseña</a>
                     <button class="btn btn-sm btn-primary float-end mx-2" type="submit"><i class="oi oi-check" /> Guardar Cambios</button>
                 </span>
             </div>
@@ -124,9 +124,13 @@ else
     private List<City>? cities;
     private string? imageUrl;
 
+    [CascadingParameter]
+    IModalService Modal { get; set; } = default!;
+
+
     protected override async Task OnInitializedAsync()
     {
-        await LoadUserAsyc();
+        await LoadUserAsync();
         await LoadCountriesAsync();
         await LoadStatesAsyn(user!.City!.State!.Country!.Id);
         await LoadCitiesAsyn(user!.City!.State!.Id);
@@ -139,7 +143,7 @@ else
 
     }
 
-    private async Task LoadUserAsyc()
+    private async Task LoadUserAsync()
     {
         var responseHTTP = await repository.Get<User>($"/api/accounts");
         if (responseHTTP.Error)
@@ -224,5 +228,18 @@ else
         }
         await loginService.LoginAsync(responseHttp.Response!.Token);
         navigationManager.NavigateTo("/");
+    }
+
+    private async Task ShowModal()
+    {
+        IModalReference modalReference;
+
+        modalReference = Modal.Show<ChangePassword>();
+
+        var result = await modalReference.Result;
+        if (result.Confirmed)
+        {
+            await LoadUserAsync();
+        }
     }
 }

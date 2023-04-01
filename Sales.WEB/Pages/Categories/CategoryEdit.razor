@@ -18,6 +18,10 @@ else
     private Category? category;
     private CategoryForm? categoryForm;
 
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+
     [Parameter]
     public int Id { get; set; }
 
@@ -57,6 +61,8 @@ else
             categoryForm!.FormPostedSuccessfully = true;
             navigationManager.NavigateTo("/categories");
         }
+        await BlazoredModal.CloseAsync(ModalResult.Ok());
+        Return();
     }
 
     private void Return()
